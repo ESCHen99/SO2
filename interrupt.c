@@ -74,14 +74,22 @@ void setTrapHandler(int vector, void (*handler)(), int maxAccessibleFromPL)
 }
 
 
+
+void dividezero_routine(){
+    if(inb(0x60) & 0x80)
+        printc_color(char_map[inb(0x60) & 0x7F], white);
+}
+
+void dividezero_handler();
+
 void setIdt()
 {
   /* Program interrups/exception service routines */
   idtR.base  = (DWord)idt;
   idtR.limit = IDT_ENTRIES * sizeof(Gate) - 1;
-  
-  set_handlers();
 
+  set_handlers();
+  setInterruptHandler(33, dividezero_handler, 0);
   /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
 
   set_idt_reg(&idtR);

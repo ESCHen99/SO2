@@ -51,3 +51,15 @@
       movl %edx, %ds;           \
       movl %edx, %es
 
+#define RESTORE_ALL \
+      pushl %ebx; \
+      pushl %ecx; \
+      pushl %edx; \
+      pushl %esi; \
+      pushl %edi; \
+      pushl %ebp; \
+      pushl %eax; \
+      pushl %ds; \
+      pushl %es; \
+      pushl %fs; \
+      pushl %gs; \

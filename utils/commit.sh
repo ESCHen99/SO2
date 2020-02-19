@@ -1,3 +1,3 @@
 make clean
-git add *
+git add .
 git commit

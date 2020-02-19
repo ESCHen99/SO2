@@ -60,11 +60,14 @@ void printc_color(char c, short int color)
 	screen[(y * NUM_COLUMNS + x)] = ch;
     if (++x >= NUM_COLUMNS)
     {
+      if(y + 1 >= NUM_ROWS)
       for(int i = 1; i < NUM_ROWS; ++i){
 	  	for(int j = 0; j < NUM_COLUMNS; ++j){
 			screen[(i-1) * NUM_COLUMNS + j] = screen[i * NUM_COLUMNS + j];
+            if( i == NUM_ROWS - 1) screen[i * NUM_COLUMNS + j] = 0;
 		}
-	  } 
+	  }
+      else ++y; 
       x = 0;
     }
   }
