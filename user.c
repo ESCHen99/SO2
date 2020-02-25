@@ -2,7 +2,7 @@
 
 
 char buff[24];
-
+int time;
 int pid;
 
 int __attribute__ ((__section__(".text.main")))
@@ -10,6 +10,8 @@ int __attribute__ ((__section__(".text.main")))
 {
     char buffer[256] = {'a', 'a', 'c', 'c'};
     write(1, buffer, 4);
-
-  while(1) { }
+    while(gettime() < 12);
+    write(1, buffer, 3);
+    while(1) { 
+    }
 }

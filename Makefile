@@ -36,6 +36,7 @@ SYSOBJ = \
 	list.o \
 	interrupt_handler.o\
 	write.o\
+	gettime.o\
 
 LIBZEOS = -L . -l zeos
 
@@ -72,6 +73,10 @@ interrupt_handler.s: interrupt_handler.S $(INCLUDEDIR)/asm.h
 write.s: write.S $(INCLUDEDIR)/asm.h 
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
+gettime.s: gettime.S $(INCLUDEDIR)/asm.h 
+	$(CPP) $(ASMFLAGS) -o $@ $<
+
+
 sys_call_table.s: sys_call_table.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
@@ -99,7 +104,7 @@ system: system.o system.lds $(SYSOBJ)
 	$(LD) $(LDFLAGS) -T system.lds -o $@ $< $(SYSOBJ) $(LIBZEOS)
 
 user: user.o user.lds $(USROBJ) 
-	$(LD) $(LDFLAGS) -T user.lds write.o -o $@ $< $(USROBJ)
+	$(LD) $(LDFLAGS) -T user.lds write.o gettime.o -o $@ $< $(USROBJ)
 
 
 clean:

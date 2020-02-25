@@ -10,8 +10,16 @@
 
 #include <zeos_interrupt.h>
 
+
+#define NUM_COLUMNS 80
+#define NUM_ROWS    25
+
+
+
 Gate idt[IDT_ENTRIES];
 Register    idtR;
+
+long long int zeos_ticks = 0;
 
 char char_map[] =
 {
@@ -94,6 +102,27 @@ int sys_write(int fd, char* buffer, int size){
     return sys_write_console(buffer, size);
 }
 
+int sys_gettime(){
+   return zeos_ticks; 
+}
+/*
+void zeos_show_clock(){
+    char c = 'a';
+    Word ch = (Word) (c & 0x00FF) | blue; 
+	Word *screen = (Word *)0xb8000;
+	screen[(0 * NUM_COLUMNS + NUM_COLUMNS-2)] = ch;
+
+}*/
+
+void clock_routine(){
+    ++zeos_ticks;
+    zeos_show_clock();
+}
+
+
+
+void clock_handler();
+
 void setIdt()
 {
   /* Program interrups/exception service routines */
@@ -102,6 +131,7 @@ void setIdt()
 
   set_handlers();
   setInterruptHandler(33, keyboard_handler, 0);
+  setInterruptHandler(32, clock_handler, 0);
   setTrapHandler(0x80, syscall_handler, 3);
   /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
 
