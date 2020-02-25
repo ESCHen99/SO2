@@ -6,6 +6,7 @@
 #include <segment.h>
 #include <hardware.h>
 #include <io.h>
+#include <devices.h>
 
 #include <zeos_interrupt.h>
 
@@ -75,12 +76,23 @@ void setTrapHandler(int vector, void (*handler)(), int maxAccessibleFromPL)
 
 
 
-void dividezero_routine(){
+void keyboard_routine(){
     if(inb(0x60) & 0x80)
         printc_color(char_map[inb(0x60) & 0x7F], white);
 }
 
-void dividezero_handler();
+void keyboard_handler();
+
+void syscall_handler();
+
+int sys_write(int fd, char* buffer, int size){
+    if(fd != 1) return -1;
+    if(buffer == NULL) return -1;
+    if(size < 0) return -1;
+    //copy
+    //copy_from_user()
+    return sys_write_console(buffer, size);
+}
 
 void setIdt()
 {
@@ -89,7 +101,8 @@ void setIdt()
   idtR.limit = IDT_ENTRIES * sizeof(Gate) - 1;
 
   set_handlers();
-  setInterruptHandler(33, dividezero_handler, 0);
+  setInterruptHandler(33, keyboard_handler, 0);
+  setTrapHandler(0x80, syscall_handler, 3);
   /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
 
   set_idt_reg(&idtR);

@@ -34,7 +34,8 @@ SYSOBJ = \
 	utils.o \
 	hardware.o \
 	list.o \
-	dividezero_handler.o\
+	interrupt_handler.o\
+	write.o\
 
 LIBZEOS = -L . -l zeos
 
@@ -65,16 +66,18 @@ bootsect.s: bootsect.S
 entry.s: entry.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
-dividezero_handler.s: dividezero_handler.S entry.o $(INCLUDEDIR)/asm.h 
+interrupt_handler.s: interrupt_handler.S $(INCLUDEDIR)/asm.h 
+	$(CPP) $(ASMFLAGS) -o $@ $<
+
+write.s: write.S $(INCLUDEDIR)/asm.h 
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
 sys_call_table.s: sys_call_table.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
-user.o:user.c $(INCLUDEDIR)/libc.h
-	gcc -m32 -g -fno-omit-frame-pointer -ffreestanding -Wall -Iinclude -fno-PIC   -c -o user.o user.c
+user.o:user.c interrupt_handler.s $(INCLUDEDIR)/libc.h 
 
-interrupt.o:interrupt.c $(INCLUDEDIR)/interrupt.h $(INCLUDEDIR)/segment.h $(INCLUDEDIR)/types.h dividezero_handler.s
+interrupt.o:interrupt.c $(INCLUDEDIR)/interrupt.h $(INCLUDEDIR)/segment.h $(INCLUDEDIR)/types.h interrupt_handler.s
 
 io.o:io.c $(INCLUDEDIR)/io.h
 
@@ -96,7 +99,7 @@ system: system.o system.lds $(SYSOBJ)
 	$(LD) $(LDFLAGS) -T system.lds -o $@ $< $(SYSOBJ) $(LIBZEOS)
 
 user: user.o user.lds $(USROBJ) 
-	$(LD) $(LDFLAGS) -T user.lds -o $@ $< $(USROBJ)
+	$(LD) $(LDFLAGS) -T user.lds write.o -o $@ $< $(USROBJ)
 
 
 clean:
