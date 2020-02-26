@@ -8,10 +8,10 @@ int pid;
 int __attribute__ ((__section__(".text.main")))
   main(void)
 {
-    char buffer[256] = {'a', 'a', 'c', 'c'};
-    write(1, buffer, 4);
+    char buffer[256] = {'h', 'o', 'l', 'a'};
+    fast_write(1, buffer, 4);
     while(gettime() < 12);
-    write(1, buffer, 3);
+    //write(1, buffer, 3);
     while(1) { 
     }
 }

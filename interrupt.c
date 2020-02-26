@@ -123,6 +123,10 @@ void clock_routine(){
 
 void clock_handler();
 
+void writeMSR(int addr, int value);
+
+void syscall_handler_sysenter();
+
 void setIdt()
 {
   /* Program interrups/exception service routines */
@@ -134,7 +138,10 @@ void setIdt()
   setInterruptHandler(32, clock_handler, 0);
   setTrapHandler(0x80, syscall_handler, 3);
   /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
-
   set_idt_reg(&idtR);
+  writeMSR(0x174, __KERNEL_CS);
+  writeMSR(0x175, INITIAL_ESP);
+  writeMSR(0x176, syscall_handler_sysenter);
+
 }
 

@@ -35,14 +35,16 @@ SYSOBJ = \
 	hardware.o \
 	list.o \
 	interrupt_handler.o\
-	write.o\
-	gettime.o\
-
+	writeMSR.o\
+	
 LIBZEOS = -L . -l zeos
 
 #add to USROBJ any object files required to complete the user program
 USROBJ = \
 	libc.o \
+	write.o\
+	gettime.o\
+	fast_write.o\
 	# libjp.a \
 
 all:zeos.bin
@@ -67,6 +69,11 @@ bootsect.s: bootsect.S
 entry.s: entry.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
+fast_write.s: fast_write.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
+	$(CPP) $(ASMFLAGS) -o $@ $<
+
+
+
 interrupt_handler.s: interrupt_handler.S $(INCLUDEDIR)/asm.h 
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
@@ -79,6 +86,10 @@ gettime.s: gettime.S $(INCLUDEDIR)/asm.h
 
 sys_call_table.s: sys_call_table.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
+
+writeMSR.s: writeMSR.S $(INCLUDEDIR)/asm.h 
+	$(CPP) $(ASMFLAGS) -o $@ $<
+
 
 user.o:user.c interrupt_handler.s $(INCLUDEDIR)/libc.h 
 
@@ -104,7 +115,7 @@ system: system.o system.lds $(SYSOBJ)
 	$(LD) $(LDFLAGS) -T system.lds -o $@ $< $(SYSOBJ) $(LIBZEOS)
 
 user: user.o user.lds $(USROBJ) 
-	$(LD) $(LDFLAGS) -T user.lds write.o gettime.o -o $@ $< $(USROBJ)
+	$(LD) $(LDFLAGS) -T user.lds -o $@ $< $(USROBJ)
 
 
 clean:
