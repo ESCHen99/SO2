@@ -11,9 +11,8 @@ ENTRY(fast_write)
 	
 	push %ecx
 	push %edx
-	push $return_syscall
+	push return_syscall
 	push %ebp
-	mov  %esp, %ebx
 		
 	
 	sysenter
