@@ -12,7 +12,9 @@ int write(int fd, char *buffer, int size);
 
 int fast_write(int fd, char *buffer, int size);
 
-int gettime();
+int gettime(void);
+
+void perror(void);
 
 void itoa(int a, char *b);
 

@@ -7,6 +7,7 @@
 #include <hardware.h>
 #include <io.h>
 #include <devices.h>
+#include <utils.h>
 
 #include <zeos_interrupt.h>
 
@@ -19,7 +20,8 @@
 Gate idt[IDT_ENTRIES];
 Register    idtR;
 
-long long int zeos_ticks = 0;
+int zeos_ticks = 0;
+
 
 char char_map[] =
 {
@@ -94,13 +96,15 @@ void keyboard_handler();
 void syscall_handler();
 
 int sys_write(int fd, char* buffer, int size){
-    if(fd != 1) return -1;
-    if(buffer == NULL) return -1;
-    if(size < 0) return -1;
+    if(fd != 1) return -81; // EBDFD
+    if(buffer == NULL) return -14;
+    if(size < 0) return -5;
     //copy
     //copy_from_user()
-    return sys_write_console(buffer, size);
+    sys_write_console(buffer, size);
+    return 0;
 }
+
 
 int sys_gettime(){
    return zeos_ticks; 

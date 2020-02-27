@@ -1,5 +1,6 @@
 #include <asm.h>
 #include <segment.h>
+#include <errno.h>
 
 #define SAVE_ALL \
       pushl %gs; \
@@ -57,7 +58,7 @@ ENTRY(syscall_handler)
     call *sys_call_table(, %eax, 0x04)
     jmp fin
 err:
-    movl $-38, %EAX
+    movl $-ENOSYS, %EAX
 fin:
     movl %eax, 0x18(%esp)
     RESTORE_ALL
@@ -77,7 +78,7 @@ ENTRY(syscall_handler_sysenter)
 	call *sys_call_table(, %eax, 0x04)
 	jmp sysenter_fin
 sysenter_err:
-	movl $1, %eax
+	movl $-ENOSYS, %eax
 sysenter_fin:
 	movl %eax, 0x18(%esp)
 	RESTORE_ALL

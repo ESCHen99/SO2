@@ -1,7 +1,7 @@
 #include <asm.h>
 
 ENTRY(write)
-    push %esp
+    push %ebp
     mov %esp, %ebp
    	push %ebx
  
@@ -10,7 +10,13 @@ ENTRY(write)
     mov 16(%ebp), %edx
     mov $0x04, %eax
     int $0x80
-	
-	pop %ebx
+    cmpl  $0, %eax	// Return negative value
+    jge fin
+    negl %eax
+    mov %eax, errno
+    mov $-1, %eax
+fin:
+    pop %ebx
+    movl %ebp, %esp
     popl %ebp
     ret
