@@ -15,6 +15,7 @@ void perror(void){
         char message[] = "Bad file descriptor\n";
         write(1, message, 20);
     }
+    errno = 0;
 }
 
 int __attribute__ ((__section__(".text.main")))
