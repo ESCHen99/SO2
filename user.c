@@ -42,7 +42,7 @@ int __attribute__ ((__section__(".text.main")))
     }
 
     char* buffer2;
-    write(1, buffer2, 1);             // Test null ptr
+    write(1, buffer2, 1);                           // Test null ptr
     write(1, buffer, strlen(buffer));                            
     perror();                                       // Test errno from bad execution after good one
     perror();
@@ -50,7 +50,7 @@ int __attribute__ ((__section__(".text.main")))
     write(1, buffer, -3);
     perror();                                       // Test negative size
         
-    while(fast_gettime() < 250);                         // Test gettime()
+    while(fast_gettime() < 250);                    // Test gettime()
     while(gettime() < 500)
     while(fast_gettime() < 750);
     while(gettime() < 1000);
