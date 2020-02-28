@@ -2,6 +2,12 @@
 #include <segment.h>
 #include <errno.h>
 
+/*
+ **********************************************************
+ * THIS FILE CONTAINES THE IMPLEMENTATION OF THE HANDLERS * 
+ **********************************************************
+*/
+
 #define SAVE_ALL \
       pushl %gs; \
       pushl %fs; \

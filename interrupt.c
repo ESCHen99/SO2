@@ -87,21 +87,28 @@ void setTrapHandler(int vector, void (*handler)(), int maxAccessibleFromPL)
 
 
 void keyboard_routine(){
-    if(inb(0x60) & 0x80)
-        printc_color(char_map[inb(0x60) & 0x7F], white);
+    if(inb(0x60) & 0x80){
+        char aux = char_map[inb(0x60) & 0x7F];
+        if(aux == 0) aux = 'C';
+        printc_color(aux, white);
+    }
 }
 
-void keyboard_handler();
-
-void syscall_handler();
-
 int sys_write(int fd, char* buffer, int size){
-    if(fd != 1) return -81; // EBDFD
-    if(buffer == NULL) return -14;
-    if(size < 0) return -5;
-    //copy
-    //copy_from_user()
-    sys_write_console(buffer, size);
+    if(fd != 1) return -81;        // EBDFD
+    if(buffer == NULL) return -14; // ENULLPTR
+    if(size < 0) return -5;        // ENEGSIZE
+
+    char sys_buffer[256];
+    while(size > 256){
+        if(copy_from_user(buffer, sys_buffer, 256) >= 0)
+            sys_write_console(sys_buffer, 256);
+        else return -1;
+        size -= 256;
+    }
+    if(copy_from_user(buffer, sys_buffer, size) >= 0)
+        sys_write_console(sys_buffer, size);
+    else return -1;                 // EUNSPECIFIED
     return 0;
 }
 
@@ -109,14 +116,6 @@ int sys_write(int fd, char* buffer, int size){
 int sys_gettime(){
    return zeos_ticks; 
 }
-/*
-void zeos_show_clock(){
-    char c = 'a';
-    Word ch = (Word) (c & 0x00FF) | blue; 
-	Word *screen = (Word *)0xb8000;
-	screen[(0 * NUM_COLUMNS + NUM_COLUMNS-2)] = ch;
-
-}*/
 
 void clock_routine(){
     ++zeos_ticks;
@@ -124,12 +123,6 @@ void clock_routine(){
 }
 
 
-
-void clock_handler();
-
-void writeMSR(int addr, int value);
-
-void syscall_handler_sysenter();
 
 void setIdt()
 {
@@ -145,7 +138,7 @@ void setIdt()
   set_idt_reg(&idtR);
   writeMSR(0x174, __KERNEL_CS);
   writeMSR(0x175, INITIAL_ESP);
-  writeMSR(0x176, syscall_handler_sysenter);
+  writeMSR(0x176, (int) syscall_handler_sysenter);
 
 }
 

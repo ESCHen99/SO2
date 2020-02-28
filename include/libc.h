@@ -14,6 +14,8 @@ int fast_write(int fd, char *buffer, int size);
 
 int gettime(void);
 
+int fast_gettime(void);
+
 void perror(void);
 
 void itoa(int a, char *b);
