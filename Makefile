@@ -16,7 +16,7 @@ LD = ld
 OBJCOPY = objcopy -O binary -R .note -R .comment -S
 
 INCLUDEDIR = include
-
+idt = idt
 
 CFLAGS = -m32 -O2  -g -fno-omit-frame-pointer -ffreestanding -Wall -I$(INCLUDEDIR) -fno-PIC
 ASMFLAGS = -I$(INCLUDEDIR)
@@ -69,31 +69,33 @@ bootsect.s: bootsect.S
 entry.s: entry.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
-fast_write.s: fast_write.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
+fast_write.s: $(idt)/fast_write.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
 
 
-interrupt_handler.s: interrupt_handler.S $(INCLUDEDIR)/asm.h 
+interrupt_handler.s: $(idt)/interrupt_handler.S $(INCLUDEDIR)/asm.h 
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
-write.s: write.S $(INCLUDEDIR)/asm.h 
+write.s: $(idt)/write.S $(INCLUDEDIR)/asm.h 
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
-gettime.s: gettime.S $(INCLUDEDIR)/asm.h 
+gettime.s: $(idt)/gettime.S $(INCLUDEDIR)/asm.h 
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
 
-sys_call_table.s: sys_call_table.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
+sys_call_table.s: $(idt)/sys_call_table.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
-writeMSR.s: writeMSR.S $(INCLUDEDIR)/asm.h 
+writeMSR.s: $(idt)/writeMSR.S $(INCLUDEDIR)/asm.h 
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
 
 user.o:user.c interrupt_handler.s $(INCLUDEDIR)/libc.h 
 
-interrupt.o:interrupt.c $(INCLUDEDIR)/interrupt.h $(INCLUDEDIR)/segment.h $(INCLUDEDIR)/types.h interrupt_handler.s
+interrupt.o: $(idt)/interrupt.c $(INCLUDEDIR)/interrupt.h $(INCLUDEDIR)/segment.h $(INCLUDEDIR)/types.h 
+	gcc -m32 -O2  -g -fno-omit-frame-pointer -ffreestanding -Wall -Iinclude -fno-PIC   -c -o interrupt.o $(idt)/interrupt.c
+
 
 io.o:io.c $(INCLUDEDIR)/io.h
 
