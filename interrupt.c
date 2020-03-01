@@ -94,17 +94,19 @@ void keyboard_routine(){
     }
 }
 
+#define sys_writeBUFF 256
+
 int sys_write(int fd, char* buffer, int size){
     if(fd != 1) return -81;        // EBDFD
     if(buffer == NULL) return -14; // ENULLPTR
     if(size < 0) return -5;        // ENEGSIZE
 
-    char sys_buffer[256];
-    while(size > 256){
-        if(copy_from_user(buffer, sys_buffer, 256) >= 0)
-            sys_write_console(sys_buffer, 256);
+    char sys_buffer[sys_writeBUFF];
+    while(size > sys_writeBUFF){
+        if(copy_from_user(buffer, sys_buffer, sys_writeBUFF) >= 0)
+            sys_write_console(sys_buffer, sys_writeBUFF);
         else return -1;
-        size -= 256;
+        size -= sys_writeBUFF;
     }
     if(copy_from_user(buffer, sys_buffer, size) >= 0)
         sys_write_console(sys_buffer, size);
