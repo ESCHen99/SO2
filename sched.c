@@ -5,6 +5,12 @@
 #include <sched.h>
 #include <mm.h>
 #include <io.h>
+#include <list.h>
+
+struct list_head freequeues;
+INIT_LEST_HEAD(freequeue);
+
+struct list_head 
 
 union task_union task[NR_TASKS]
   __attribute__((__section__(".data.task")));
