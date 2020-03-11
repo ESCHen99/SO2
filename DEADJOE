@@ -1,0 +1,55 @@
+
+*** These modified files were found in JOE when it aborted on Wed Mar 11 17:50:21 2020
+*** JOE was aborted because the terminal closed
+
+*** File '(Unnamed)'
+/home/alumne/SO2/.git/COMMIT_EDITMSG
+
+*** File '/home/alumne/SO2/.git/COMMIT_EDITMSG'
+# Changes to be committed:
+#	new file:   bochsout.txt
+#	new file:   bootsect
+#	new file:   bootsect.o
+#	new file:   bootsect.s
+#	new file:   build
+#	new file:   devices.o
+#	new file:   entry.o
+#	new file:   entry.s
+#	new file:   fast_write.o
+#	new file:   fast_write.s
+#	new file:   gettime.o
+#	new file:   gettime.s
+#	new file:   hardware.o
+#	new file:   include/.list.h.swp
+#	new file:   include/.sched.h.swp
+#	new file:   interrupt.o
+#	new file:   interrupt_handler.o
+#	new file:   interrupt_handler.s
+#	new file:   io.o
+#	new file:   libc.o
+#	new file:   list.o
+#	new file:   mm.o
+#	modified:   sched.c
+#	new file:   sched.o
+#	new file:   sys.o
+#	new file:   sys_call_table.o
+#	new file:   sys_call_table.s
+#	new file:   system
+#	new file:   system.o
+#	new file:   system.out
+#	new file:   user
+#	new file:   user.o
+#	new file:   user.out
+#	new file:   utils.o
+#	new file:   write.o
+#	new file:   write.s
+#	new file:   writeMSR.o
+#	new file:   writeMSR.s
+#	new file:   zeos.bin
+#
+
+*** File '* Startup Log *'
+Processing '/etc/joe/editorrc'...
+Processing '/etc/joe/ftyperc'...
+Finished processing /etc/joe/ftyperc
+Finished processing /etc/joe/editorrc
