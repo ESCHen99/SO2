@@ -8,7 +8,6 @@
 #include <list.h>
 
 /* Declate and initialize a freequeue*/
-struct list_head freequeue;
 
 //struct list_head 
 
@@ -23,14 +22,15 @@ struct task_struct *list_head_to_task_struct(struct list_head *l)
 #endif
 
 
+
 extern struct list_head blocked;
 
 
 void init_task_system(){
-	
+	INIT_LIST_HEAD(&readyqueue);	
 	INIT_LIST_HEAD(&freequeue);
 	for(int i = 0; i < NR_TASKS; ++i){
-		list_add(&(task[i].task.list.anchor), &freequeue);
+		list_add(&(task[i].task.list), &freequeue);
 	}
 }
 
@@ -70,7 +70,13 @@ void cpu_idle(void)
 
 void init_idle (void)
 {
-
+	struct list_head* task = list_first(&freequeue);
+ 	struct task_struct* realTask = list_entry(task, struct task_struct, list);
+	realTask -> PID = 0;
+	allocate_DIR(realTask);
+	//task_switch(realTask);
+	idle_task = realTask;
+	list_del(task);
 }
 
 void init_task1(void)

@@ -14,14 +14,19 @@
 
 enum state_t { ST_RUN, ST_READY, ST_BLOCKED };
 
-struct element{
-	struct list_head anchor;
-};
+struct list_head freequeue;
+
+struct list_head readyqueue;
+
+
+
 struct task_struct {
   int PID;			/* Process ID. This MUST be the first field of the struct. */
   page_table_entry * dir_pages_baseAddr;
-  struct element list;
+  struct list_head list;
 };
+
+
 
 union task_union {
   struct task_struct task;
@@ -41,6 +46,8 @@ void init_task_system();
 
 /* Inicialitza les dades del proces inicial */
 void init_task1(void);
+
+struct task_struct* idle_task;
 
 void init_idle(void);
 
