@@ -7,10 +7,10 @@
 #include <io.h>
 #include <list.h>
 
-struct list_head freequeues;
-INIT_LEST_HEAD(freequeue);
+/* Declate and initialize a freequeue*/
+struct list_head freequeue;
 
-struct list_head 
+//struct list_head 
 
 union task_union task[NR_TASKS]
   __attribute__((__section__(".data.task")));
@@ -22,8 +22,17 @@ struct task_struct *list_head_to_task_struct(struct list_head *l)
 }
 #endif
 
+
 extern struct list_head blocked;
 
+
+void init_task_system(){
+	
+	INIT_LIST_HEAD(&freequeue);
+	for(int i = 0; i < NR_TASKS; ++i){
+		list_add(&(task[i].task.list.anchor), &freequeue);
+	}
+}
 
 /* get_DIR - Returns the Page Directory address for task 't' */
 page_table_entry * get_DIR (struct task_struct *t) 
