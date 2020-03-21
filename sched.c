@@ -70,19 +70,44 @@ void cpu_idle(void)
 
 void init_idle (void)
 {
-	struct list_head* task = list_first(&freequeue);
- 	struct task_struct* realTask = list_entry(task, struct task_struct, list);
-	realTask -> PID = 0;
-	allocate_DIR(realTask);
-	//task_switch(realTask);
-	idle_task = realTask;
+	struct list_head* task = list_first(&freequeue); // Fetch the first free task to be idle
+ 	struct task_struct* real_task = list_entry(task, struct task_struct, list);
+	real_task -> PID = 0;                            // Process PID = 0
+	allocate_DIR(real_task);                         // Allocate directory table
+
+  union task_union* real_kernel_stack = real_task; // kernel_stack (task_union) pointer
+  
+  real_kernel_stack -> stack[KERNEL_STACK_SIZE - 1] = &cpu_idle; // Base of stack @of function to be executed
+  real_kernel_stack -> stack[KERNEL_STACK_SIZE - 2] = 0xfe00fe00; // random %ebp for debug purposes
+  real_task -> kernel_esp = &(real_kernel_stack->stack[KERNEL_STACK_SIZE-2]); // Update kernel_sack for task_switch
+                                                                                // %ebp
+	//task_switch(real_task);
+	idle_task = real_task;
 	list_del(task);
 }
 
 void init_task1(void)
 {
+    struct list_head* task = list_first(&freequeue);
+    struct task_struct* real_task = list_entry(task, struct task_struct, list);
+    real_task -> PID = 1;
+    allocate_DIR(real_task);
+
+   set_user_pages(real_task); 
+   tss.esp0 = real_task + (KERNEL_STACK_SIZE-1)*sizeof(long); //Assuming task_switch structure??? 
+   //tss.esp0 = real_task;
+   set_cr3(real_task -> dir_pages_baseAddr);
+   
 }
 
+void inner_task_switch(union task_union* t){
+  tss.esp0 = t;    
+  set_cr3(t -> task.dir_pages_baseAddr);
+
+  struct task_struct* real_task = current();
+  real_task -> kernel_esp = get_current_ebp(); 
+  load_esp(t -> task.kernel_esp);
+}
 
 void init_sched()
 {

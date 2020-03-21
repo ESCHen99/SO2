@@ -36,6 +36,9 @@ SYSOBJ = \
 	list.o \
 	interrupt_handler.o\
 	writeMSR.o\
+  task_switch.o\
+  get_current_ebp.o\
+  load_esp.o\
 	
 LIBZEOS = -L . -l zeos
 
@@ -69,6 +72,14 @@ bootsect.s: bootsect.S
 entry.s: entry.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
+load_esp.s: load_esp.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
+	$(CPP) $(ASMFLAGS) -o $@ $<
+
+
+get_current_ebp.s: get_current_ebp.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
+	$(CPP) $(ASMFLAGS) -o $@ $<
+
+
 current.s: current.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
@@ -91,6 +102,9 @@ sys_call_table.s: $(idt)/sys_call_table.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segm
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
 writeMSR.s: $(idt)/writeMSR.S $(INCLUDEDIR)/asm.h 
+	$(CPP) $(ASMFLAGS) -o $@ $<
+
+task_switch.s: task_switch.S $(INCLUDEDIR)/asm.h 
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
 

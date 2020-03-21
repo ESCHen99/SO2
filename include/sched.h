@@ -1,3 +1,4 @@
+
 /*
  * sched.h - Estructures i macros pel tractament de processos
  */
@@ -23,6 +24,7 @@ struct list_head readyqueue;
 struct task_struct {
   int PID;			/* Process ID. This MUST be the first field of the struct. */
   page_table_entry * dir_pages_baseAddr;
+  unsigned int kernel_esp;
   struct list_head list;
 };
 
@@ -55,7 +57,15 @@ void init_sched(void);
 
 struct task_struct * current();
 
+int get_current_ebp();
+
+void load_esp(unsigned int new_ebp);
+
+void inner_task_switch(union task_union* t);
+
 void task_switch(union task_union*t);
+
+
 
 struct task_struct *list_head_to_task_struct(struct list_head *l);
 

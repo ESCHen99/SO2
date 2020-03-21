@@ -71,6 +71,12 @@ int __attribute__((__section__(".text.main")))
   set_seg_regs(__KERNEL_DS, __KERNEL_DS, (DWord) &task[4]);
 
   /*** DO *NOT* ADD ANY CODE IN THIS ROUTINE BEFORE THIS POINT ***/
+  if(sizeof(long) == 4) printk("Long is 4\n"); // For debuging purposes
+  
+  if(sizeof(long) == 8) printk("Long is 8\n");
+  
+  if(sizeof(int) == 4) printk("Int is 4\n");
+  
 
   printk("Kernel Loaded!   ");
 
@@ -84,7 +90,7 @@ int __attribute__((__section__(".text.main")))
   init_mm();
 
   /* Initialize an address space to be used for the monoprocess version of ZeOS */
-  monoprocess_init_addr_space(); /* TO BE DELETED WHEN THE PROCESS MANAGEMENT CODE TO BECOME MULTIPROCESS IS ADDED */
+  //monoprocess_init_addr_space(); /* TO BE DELETED WHEN THE PROCESS MANAGEMENT CODE TO BECOME MULTIPROCESS IS ADDED */
   init_task_system();
   /* Initialize Scheduling */
   init_sched();
