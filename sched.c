@@ -97,6 +97,7 @@ void init_task1(void)
    tss.esp0 = (int)real_task + (int) (KERNEL_STACK_SIZE)*sizeof(long); //Assuming task_switch structure??? 
    //tss.esp0 = real_task;
    set_cr3(real_task -> dir_pages_baseAddr);
+   task1_task = real_task;
    list_del(task);
 }
 

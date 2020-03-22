@@ -47,6 +47,8 @@ extern union task_union task[NR_TASKS]; /* Vector de tasques */
 void init_task_system();
 
 /* Inicialitza les dades del proces inicial */
+struct task_struct* task1_task;
+
 void init_task1(void);
 
 struct task_struct* idle_task;

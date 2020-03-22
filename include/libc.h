@@ -8,6 +8,8 @@
 
 #include <stats.h>
 
+int getpid(void);
+
 int write(int fd, char *buffer, int size);
 
 int fast_write(int fd, char *buffer, int size);

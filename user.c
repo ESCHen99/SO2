@@ -63,7 +63,9 @@ int __attribute__ ((__section__(".text.main")))
 
     char buffer[256] = "Hola\n";
     write(1, buffer, strlen(buffer));
-
+    char buffer2[256] = "task1\n";
+    if(getpid() == 0xfefefefe) write(1, buffer2, strlen(buffer2));
     while(1) { 
+//        write(1, buffer, strlen(buffer));
     }
 }

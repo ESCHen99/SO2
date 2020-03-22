@@ -48,6 +48,7 @@ USROBJ = \
 	write.o\
 	gettime.o\
 	fast_write.o\
+  getpid.o\
 	# libjp.a \
 
 all:zeos.bin
@@ -86,6 +87,8 @@ current.s: current.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 fast_write.s: $(idt)/fast_write.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
+getpid.s: $(idt)/getpid.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
+	$(CPP) $(ASMFLAGS) -o $@ $<
 
 
 interrupt_handler.s: $(idt)/interrupt_handler.S $(INCLUDEDIR)/asm.h 
