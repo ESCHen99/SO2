@@ -44,6 +44,8 @@ extern union task_union task[NR_TASKS]; /* Vector de tasques */
 
 /* Init freequeue*/
 
+int PID_counter;
+
 void init_task_system();
 
 /* Inicialitza les dades del proces inicial */

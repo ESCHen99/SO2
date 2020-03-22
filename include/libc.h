@@ -10,6 +10,8 @@
 
 int getpid(void);
 
+int fork(void);
+
 int write(int fd, char *buffer, int size);
 
 int fast_write(int fd, char *buffer, int size);

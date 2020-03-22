@@ -60,12 +60,14 @@ int __attribute__ ((__section__(".text.main")))
 
 
     // Testing task switch
-
-    char buffer[256] = "Hola\n";
+    int wait = 200;
+    char buffer[256] = "task1\n";
     write(1, buffer, strlen(buffer));
     char buffer2[256] = "task1\n";
     if(getpid() == 0xfefefefe) write(1, buffer2, strlen(buffer2));
-    while(1) { 
-//        write(1, buffer, strlen(buffer));
+    while(1) {
+        int aux = gettime();
+        while(gettime() - aux < wait);
+        write(1, buffer, strlen(buffer));
     }
 }

@@ -6,7 +6,7 @@
 #include <mm.h>
 #include <io.h>
 #include <list.h>
-
+#include <errno.h>
 /* Declate and initialize a freequeue*/
 
 //struct list_head 
@@ -27,6 +27,7 @@ extern struct list_head blocked;
 
 
 void init_task_system(){
+  PID_counter = 0;
 	INIT_LIST_HEAD(&readyqueue);	
 	INIT_LIST_HEAD(&freequeue);
 	for(int i = 0; i < NR_TASKS; ++i){
@@ -64,6 +65,9 @@ void cpu_idle(void)
 
 	while(1)
 	{
+      int aux = sys_gettime();
+      while(sys_gettime() - aux < 200);
+      printk("idle\n");
 	;
 	}
 }
@@ -84,6 +88,7 @@ void init_idle (void)
 	//task_switch(real_task);
 	idle_task = real_task;
 	list_del(task);
+  ++PID_counter;
 }
 
 void init_task1(void)
@@ -99,6 +104,7 @@ void init_task1(void)
    set_cr3(real_task -> dir_pages_baseAddr);
    task1_task = real_task;
    list_del(task);
+   ++PID_counter;
 }
 
 int inner_task_switch(union task_union* new){
@@ -109,6 +115,8 @@ int inner_task_switch(union task_union* new){
   set_cr3(new -> task.dir_pages_baseAddr);
   return new -> task.kernel_esp;
 }
+
+
 
 void init_sched()
 {
