@@ -94,14 +94,14 @@ void init_task1(void)
    allocate_DIR(real_task);
 
    set_user_pages(real_task); 
-   tss.esp0 = 0x1cfff; //real_task + (KERNEL_STACK_SIZE)*sizeof(long) - 1; //Assuming task_switch structure??? 
+   tss.esp0 = (int)real_task + (int) (KERNEL_STACK_SIZE)*sizeof(long); //Assuming task_switch structure??? 
    //tss.esp0 = real_task;
    set_cr3(real_task -> dir_pages_baseAddr);
    list_del(task);
 }
 
 int inner_task_switch(union task_union* new){
-  tss.esp0 = (new -> task.kernel_esp);    
+  tss.esp0 = ((int) new + (int) KERNEL_STACK_SIZE*sizeof(long)); 
   struct task_struct* real_task = current();
   real_task -> kernel_esp = get_current_ebp(); 
    
