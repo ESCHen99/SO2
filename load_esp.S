@@ -1,5 +1,5 @@
 #include <asm.h>
 
 ENTRY(load_esp)
-  mov 8(%ebp), %esp
+  mov 4(%esp), %esp
   ret

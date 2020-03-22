@@ -91,6 +91,7 @@ void keyboard_routine(){
         char aux = char_map[inb(0x60) & 0x7F];
         if(aux == 0) aux = 'C';
         printc_color(aux, white);
+        if(aux == 't') task_switch(idle_task);
     }
 }
 

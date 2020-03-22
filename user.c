@@ -34,6 +34,7 @@ void perror(void){
 int __attribute__ ((__section__(".text.main")))
   main(void)
 {
+    /* ENTREGA 1
     char buffer[256] = "Hola\n";
     perror();                                       // Test no error
     
@@ -55,6 +56,14 @@ int __attribute__ ((__section__(".text.main")))
     while(fast_gettime() < 750);
     while(gettime() < 1000);
     fast_write(1, buffer, 4);
+    */
+
+
+    // Testing task switch
+
+    char buffer[256] = "Hola\n";
+    write(1, buffer, strlen(buffer));
+
     while(1) { 
     }
 }

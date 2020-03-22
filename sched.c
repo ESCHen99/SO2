@@ -88,25 +88,25 @@ void init_idle (void)
 
 void init_task1(void)
 {
-    struct list_head* task = list_first(&freequeue);
-    struct task_struct* real_task = list_entry(task, struct task_struct, list);
-    real_task -> PID = 1;
-    allocate_DIR(real_task);
+   struct list_head* task = list_first(&freequeue);
+   struct task_struct* real_task = list_entry(task, struct task_struct, list);
+   real_task -> PID = 0xfefefefe;
+   allocate_DIR(real_task);
 
    set_user_pages(real_task); 
-   tss.esp0 = real_task + (KERNEL_STACK_SIZE-1)*sizeof(long); //Assuming task_switch structure??? 
+   tss.esp0 = 0x1cfff; //real_task + (KERNEL_STACK_SIZE)*sizeof(long) - 1; //Assuming task_switch structure??? 
    //tss.esp0 = real_task;
    set_cr3(real_task -> dir_pages_baseAddr);
-   
+   list_del(task);
 }
 
-void inner_task_switch(union task_union* t){
-  tss.esp0 = t;    
-  set_cr3(t -> task.dir_pages_baseAddr);
-
+int inner_task_switch(union task_union* new){
+  tss.esp0 = (new -> task.kernel_esp);    
   struct task_struct* real_task = current();
   real_task -> kernel_esp = get_current_ebp(); 
-  load_esp(t -> task.kernel_esp);
+   
+  set_cr3(new -> task.dir_pages_baseAddr);
+  return new -> task.kernel_esp;
 }
 
 void init_sched()

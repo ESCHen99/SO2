@@ -61,7 +61,7 @@ int get_current_ebp();
 
 void load_esp(unsigned int new_ebp);
 
-void inner_task_switch(union task_union* t);
+int inner_task_switch(union task_union* t);
 
 void task_switch(union task_union*t);
 
