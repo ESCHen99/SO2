@@ -93,6 +93,7 @@ void keyboard_routine(){
         printc_color(aux, white);
         if(aux == '0') task_switch(idle_task);
         if(aux == '1') task_switch(task1_task);
+        if(aux == 'f') task_switch(list_entry(list_first(&readyqueue), struct task_struct, list));
     }
 }
 

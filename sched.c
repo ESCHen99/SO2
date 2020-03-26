@@ -91,6 +91,8 @@ void init_idle (void)
   ++PID_counter;
 }
 
+int get_fork_ebp();
+
 void init_task1(void)
 {
    struct list_head* task = list_first(&freequeue);

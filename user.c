@@ -5,6 +5,8 @@ char buff[24];
 int time;
 int pid;
 int errno = 0;
+int fork_comprobar = 0;
+
 
 void perror(void){
     if(errno == 0){
@@ -57,7 +59,7 @@ int __attribute__ ((__section__(".text.main")))
     while(gettime() < 1000);
     fast_write(1, buffer, 4);
     */
-
+    fork();
 
     // Testing task switch
     int wait = 200;
@@ -68,6 +70,7 @@ int __attribute__ ((__section__(".text.main")))
     while(1) {
         int aux = gettime();
         while(gettime() - aux < wait);
+        ++fork_comprobar;
         write(1, buffer, strlen(buffer));
     }
 }

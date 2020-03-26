@@ -39,6 +39,7 @@ SYSOBJ = \
   task_switch.o\
   get_current_ebp.o\
   load_esp.o\
+  get_fork_ebp.o\
 	
 LIBZEOS = -L . -l zeos
 
@@ -79,6 +80,9 @@ load_esp.s: load_esp.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 
 
 get_current_ebp.s: get_current_ebp.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
+	$(CPP) $(ASMFLAGS) -o $@ $<
+
+get_fork_ebp.s: get_fork_ebp.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
 
@@ -130,6 +134,8 @@ libc.o:libc.c $(INCLUDEDIR)/libc.h
 mm.o:mm.c $(INCLUDEDIR)/types.h $(INCLUDEDIR)/mm.h
 
 sys.o:sys.c $(INCLUDEDIR)/devices.h
+	gcc -m32 -O0  -g -fno-omit-frame-pointer -ffreestanding -Wall -Iinclude -fno-PIC   -c -o sys.o sys.c
+
 
 utils.o:utils.c $(INCLUDEDIR)/utils.h
 
