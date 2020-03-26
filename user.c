@@ -59,13 +59,23 @@ int __attribute__ ((__section__(".text.main")))
     while(gettime() < 1000);
     fast_write(1, buffer, 4);
     */
-    fork();
-
-    // Testing task switch
     int wait = 200;
     char buffer[256] = "task1\n";
     write(1, buffer, strlen(buffer));
     char buffer2[256] = "task1\n";
+//    while(1) fork();
+    if(fork() == 0){
+      char buffer3[256] = "task1-child\n";
+      for(int i = 0; i < 5; ++i){
+        int aux = gettime();
+        while(gettime() - aux < wait);
+        ++fork_comprobar;
+        write(1, buffer3, strlen(buffer3));
+      }
+      exit();
+    }
+
+    // Testing task switch
     if(getpid() == 0xfefefefe) write(1, buffer2, strlen(buffer2));
     while(1) {
         int aux = gettime();

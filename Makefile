@@ -51,6 +51,7 @@ USROBJ = \
 	fast_write.o\
   getpid.o\
   fork.o\
+  exit.o\
 	# libjp.a \
 
 all:zeos.bin
@@ -90,6 +91,9 @@ current.s: current.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
 fast_write.s: $(idt)/fast_write.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
+	$(CPP) $(ASMFLAGS) -o $@ $<
+
+exit.s: $(idt)/exit.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
 fork.s: $(idt)/fork.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h

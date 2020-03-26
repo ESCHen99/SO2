@@ -39,6 +39,17 @@ int ret_from_fork(){
   return 0;        
 }
 
+void free_task_struct(struct task_struct* current){
+  free_user_pages(current);
+  list_del(&(current -> list));
+}
+
+int sys_exit(){
+  free_task_struct(current());
+  task_switch(idle_task);
+  return 0;
+}
+
 int sys_fork(void){
   int PID = -1;
   if(list_empty(&freequeue)) return PID; // Too many process already
@@ -90,9 +101,9 @@ int sys_fork()
   // creates the child process
   
   return PID;
-}*/
+}
 
 
 void sys_exit()
 {  
-}
+}*/
