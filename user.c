@@ -65,6 +65,15 @@ int __attribute__ ((__section__(".text.main")))
     char buffer2[256] = "task1\n";
 //    while(1) fork();
     if(fork() == 0){
+      if(fork() == 0){
+        char buff3[256] = "task1-child-child\n"; 
+        for(int i = 0; i < 5; ++i){
+          int aux = gettime();
+          while((gettime()-aux) < 200);
+          write(1, buff3, strlen(buff3));
+        }
+        exit();
+      }
       char buffer3[256] = "task1-child\n";
       for(int i = 0; i < 5; ++i){
         int aux = gettime();

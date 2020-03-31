@@ -124,9 +124,11 @@ task_switch.s: task_switch.S $(INCLUDEDIR)/asm.h
 
 
 user.o:user.c interrupt_handler.s $(INCLUDEDIR)/libc.h 
+	gcc -m32 -O0  -g -fno-omit-frame-pointer -ffreestanding -Wall -Iinclude -fno-PIC   -c -o user.o user.c
+
 
 interrupt.o: $(idt)/interrupt.c $(INCLUDEDIR)/interrupt.h $(INCLUDEDIR)/segment.h $(INCLUDEDIR)/types.h 
-	gcc -m32 -O2  -g -fno-omit-frame-pointer -ffreestanding -Wall -Iinclude -fno-PIC   -c -o interrupt.o $(idt)/interrupt.c
+	gcc -m32 -O0  -g -fno-omit-frame-pointer -ffreestanding -Wall -Iinclude -fno-PIC   -c -o interrupt.o $(idt)/interrupt.c
 
 
 io.o:io.c $(INCLUDEDIR)/io.h
@@ -166,6 +168,9 @@ emul: zeos.bin
 gdb: zeos.bin
 	bochs -q -f .bochsrc_gdb &
 	gdb -x .gdbcmd system
+ddd: zeos.bin
+	bochs -q -f .bochsrc_ddd &
+	ddd -x .dddcmd system
 
 emuldbg: zeos.bin
 	bochs_nogdb -q -f .bochsrc

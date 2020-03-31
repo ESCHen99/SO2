@@ -94,6 +94,10 @@ void keyboard_routine(){
         if(aux == '0') task_switch(idle_task);
         if(aux == '1') task_switch(task1_task);
         if(aux == 'f') task_switch(list_entry(list_first(&readyqueue), struct task_struct, list));
+        if(aux == 's'){
+          //Testing the scheduler
+          schedule(); 
+        }
     }
 }
 
@@ -125,6 +129,7 @@ int sys_gettime(){
 void clock_routine(){
     ++zeos_ticks;
     zeos_show_clock();
+    schedule();
 }
 
 

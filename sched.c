@@ -77,6 +77,7 @@ void init_idle (void)
 	struct list_head* task = list_first(&freequeue); // Fetch the first free task to be idle
  	struct task_struct* real_task = list_entry(task, struct task_struct, list);
 	real_task -> PID = 0;                            // Process PID = 0
+  real_task -> quantum = DEFAULT_QUANTUM;
 	allocate_DIR(real_task);                         // Allocate directory table
 
   union task_union* real_kernel_stack = real_task; // kernel_stack (task_union) pointer
@@ -98,10 +99,13 @@ void init_task1(void)
    struct list_head* task = list_first(&freequeue);
    struct task_struct* real_task = list_entry(task, struct task_struct, list);
    real_task -> PID = 0xfefefefe;
+   real_task -> quantum = DEFAULT_QUANTUM;
    allocate_DIR(real_task);
 
    set_user_pages(real_task); 
    tss.esp0 = (int)real_task + (int) (KERNEL_STACK_SIZE)*sizeof(long); //Assuming task_switch structure??? 
+   writeMSR(0x175, tss.esp0);
+
    //tss.esp0 = real_task;
    set_cr3(real_task -> dir_pages_baseAddr);
    task1_task = real_task;
@@ -122,7 +126,7 @@ int inner_task_switch(union task_union* new){
 
 void init_sched()
 {
-
+ current_quantum = DEFAULT_QUANTUM;
 }
 
 struct task_struct* current()
@@ -136,3 +140,47 @@ struct task_struct* current()
   return (struct task_struct*)(ret_value&0xfffff000);
 }
 
+
+int get_quantum(struct task_struct *t){
+  return t->quantum;        
+}
+
+void set_quantum(struct task_struct *t, int new_quantum){
+  t->quantum = new_quantum;        
+}
+
+void sched_next_rr(){
+  struct list_head* task = list_first(&readyqueue);
+  struct task_struct* next_task = list_entry(task, struct task_struct, list);
+  list_del(task);
+  current_quantum = get_quantum(next_task);
+
+  task_switch(next_task);
+}
+
+void update_process_state_rr(struct task_struct *t, struct list_head *dest){
+  if(dest != NULL) list_add_tail(&(t->list), dest);
+}
+
+int needs_sched_rr(){
+  return current_quantum == 0;        
+}
+
+void update_sched_data_rr(){
+   --current_quantum; 
+}
+
+void schedule(){
+  update_sched_data_rr();
+  if(needs_sched_rr()){
+    struct task_struct* current_task = current();
+    if(current_task != idle_task) update_process_state_rr(current_task, &readyqueue);
+
+    if(list_empty(&readyqueue)){
+      task_switch(idle_task);        
+    }
+    else{
+      sched_next_rr();
+    }
+  }
+}

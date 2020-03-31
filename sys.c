@@ -41,14 +41,18 @@ int ret_from_fork(){
 
 void free_task_struct(struct task_struct* current){
   free_user_pages(current);
-  list_del(&(current -> list));
+  //list_del(&(current -> list));
 }
 
 int sys_exit(){
   free_task_struct(current());
-  task_switch(idle_task);
+  sched_next_rr(); 
+  //schedule();
+  //task_switch(idle_task); // To be substituted by scheduler interface
   return 0;
 }
+
+int get_fork_ebp(void);
 
 int sys_fork(void){
   int PID = -1;
@@ -82,14 +86,14 @@ int sys_fork(void){
 
   set_cr3(parent_task->dir_pages_baseAddr); // Flush TLB;
   child_task -> PID = PID_counter++; // New PID for child
-
+  child_task -> quantum = parent_task -> quantum;
   // Update kernel_esp:
   child_task -> kernel_esp = (int) child_task + (int)get_fork_ebp()%4096 - 4;
   int* child_stack_ebp = child_task -> kernel_esp;
   child_stack_ebp[0] = 0xfcfcfcfc;
   child_stack_ebp[1] = ret_from_fork;
   
-  list_add(task, &readyqueue);
+  list_add_tail(task, &readyqueue);
   return child_task -> PID;
 }
 
