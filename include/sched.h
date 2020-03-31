@@ -8,12 +8,16 @@
 
 #include <list.h>
 #include <types.h>
+#include <stats.h>
 #include <mm_address.h>
 
 #define NR_TASKS      10
 #define KERNEL_STACK_SIZE	1024
 
 #define DEFAULT_QUANTUM 200
+#define RUNNING 0
+#define READY 1
+#define BLOCKED 2
 
 enum state_t { ST_RUN, ST_READY, ST_BLOCKED };
 
@@ -29,6 +33,8 @@ struct task_struct {
   unsigned int kernel_esp;
   struct list_head list;
   int quantum;
+  int state;
+  struct stats stat;
 };
 
 void schedule();
@@ -48,6 +54,8 @@ extern union task_union task[NR_TASKS]; /* Vector de tasques */
 /* Init freequeue*/
 
 int PID_counter;
+
+void init_stat(struct stats* st);
 
 void init_task_system();
 

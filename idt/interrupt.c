@@ -121,7 +121,9 @@ int sys_write(int fd, char* buffer, int size){
     return 0;
 }
 
-
+int sys_get_stats(int pid, struct stats *st){
+        
+}
 int sys_gettime(){
    return zeos_ticks; 
 }

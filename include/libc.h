@@ -18,6 +18,8 @@ int write(int fd, char *buffer, int size);
 
 int fast_write(int fd, char *buffer, int size);
 
+int get_stats(int pid, struct stats *st);
+
 int gettime(void);
 
 int fast_gettime(void);

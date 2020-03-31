@@ -26,6 +26,16 @@ struct task_struct *list_head_to_task_struct(struct list_head *l)
 extern struct list_head blocked;
 
 
+void init_stat(struct stats* st){
+  st->user_ticks = 0;
+  st->system_ticks = 0;
+  st->blocked_ticks = 0;
+  st->ready_ticks = 0;
+  st->elapsed_total_ticks = 0;
+  st -> total_trans = 0;
+  st -> remaining_ticks = 0;
+}
+
 void init_task_system(){
   PID_counter = 0;
 	INIT_LIST_HEAD(&readyqueue);	
@@ -154,11 +164,15 @@ void sched_next_rr(){
   struct task_struct* next_task = list_entry(task, struct task_struct, list);
   list_del(task);
   current_quantum = get_quantum(next_task);
-
+  next_task->state = RUNNING;
+  next_task->stat.ready_ticks += get_ticks() - next_task ->stat.elapsed_total_ticks;
+  next_task->stat.elapsed_total_ticks = get_ticks(); // d)
+  ++next_task->stat.total_trans;
   task_switch(next_task);
 }
 
 void update_process_state_rr(struct task_struct *t, struct list_head *dest){
+  if(dest == &readyqueue) t->state = READY;
   if(dest != NULL) list_add_tail(&(t->list), dest);
 }
 
@@ -167,7 +181,8 @@ int needs_sched_rr(){
 }
 
 void update_sched_data_rr(){
-   --current_quantum; 
+   --current_quantum;
+   current()->stat.remaining_ticks = current_quantum;
 }
 
 void schedule(){
@@ -180,6 +195,8 @@ void schedule(){
       task_switch(idle_task);        
     }
     else{
+      current_task->stat.system_ticks += get_ticks() - current_task -> stat.elapsed_total_ticks; // c)
+      current_task->stat.elapsed_total_ticks = get_ticks();
       sched_next_rr();
     }
   }
