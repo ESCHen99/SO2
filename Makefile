@@ -40,8 +40,9 @@ SYSOBJ = \
   get_current_ebp.o\
   load_esp.o\
   get_fork_ebp.o\
+  libauxjp.a\
 	
-LIBZEOS = -L . -l zeos
+LIBZEOS = -L . -l zeos -l auxjp
 
 #add to USROBJ any object files required to complete the user program
 USROBJ = \
@@ -53,7 +54,7 @@ USROBJ = \
   fork.o\
   exit.o\
   get_stats.o\
-	# libjp.a \
+	libjp.a\
 
 all:zeos.bin
 

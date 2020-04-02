@@ -41,7 +41,7 @@ void init_task_system(){
 	INIT_LIST_HEAD(&readyqueue);	
 	INIT_LIST_HEAD(&freequeue);
 	for(int i = 0; i < NR_TASKS; ++i){
-		list_add(&(task[i].task.list), &freequeue);
+		list_add_tail(&(task[i].task.list), &freequeue);
 	}
 }
 
@@ -82,6 +82,10 @@ void cpu_idle(void)
 	}
 }
 
+struct task_struct* list_head_to_task_struct(struct list_head* l){
+  return list_entry(l, struct task_struct, list);
+}
+
 void init_idle (void)
 {
 	struct list_head* task = list_first(&freequeue); // Fetch the first free task to be idle
@@ -108,7 +112,7 @@ void init_task1(void)
 {
    struct list_head* task = list_first(&freequeue);
    struct task_struct* real_task = list_entry(task, struct task_struct, list);
-   real_task -> PID = 0xfefefefe;
+   real_task -> PID = 0x1;
    real_task -> quantum = DEFAULT_QUANTUM;
    allocate_DIR(real_task);
 
@@ -123,13 +127,14 @@ void init_task1(void)
    ++PID_counter;
 }
 
-int inner_task_switch(union task_union* new){
+int inner_task_switch(union task_union* new, int current_ebp){
   tss.esp0 = ((int) new + (int) KERNEL_STACK_SIZE*sizeof(long)); 
   struct task_struct* real_task = current();
-  real_task -> kernel_esp = get_current_ebp(); 
-   
+  
+  real_task -> kernel_esp = current_ebp; // %ebx %edi %esi 
+
   set_cr3(new -> task.dir_pages_baseAddr);
-  return new -> task.kernel_esp;
+  return (new -> task.kernel_esp );
 }
 
 
@@ -160,19 +165,25 @@ void set_quantum(struct task_struct *t, int new_quantum){
 }
 
 void sched_next_rr(){
-  struct list_head* task = list_first(&readyqueue);
-  struct task_struct* next_task = list_entry(task, struct task_struct, list);
-  list_del(task);
+  struct task_struct* next_task = idle_task;
+  if(!list_empty(&readyqueue)){
+    struct list_head* task = list_first(&readyqueue);
+    next_task = list_entry(task, struct task_struct, list);
+    update_process_state_rr(next_task, NULL); 
+  }
   current_quantum = get_quantum(next_task);
-  next_task->state = RUNNING;
+
+
   next_task->stat.ready_ticks += get_ticks() - next_task ->stat.elapsed_total_ticks;
   next_task->stat.elapsed_total_ticks = get_ticks(); // d)
+  
   ++next_task->stat.total_trans;
+  
   task_switch(next_task);
 }
 
 void update_process_state_rr(struct task_struct *t, struct list_head *dest){
-  if(dest == &readyqueue) t->state = READY;
+  if(t->list.next != NULL & t->list.next != NULL) list_del(&(t->list));
   if(dest != NULL) list_add_tail(&(t->list), dest);
 }
 
@@ -200,4 +211,14 @@ void schedule(){
       sched_next_rr();
     }
   }
+}
+
+void user_to_system(){
+  current()->stat.user_ticks += get_ticks() - current()->stat.elapsed_total_ticks;
+  current()->stat.elapsed_total_ticks = get_ticks();
+}
+
+void system_to_user(){
+  current()->stat.system_ticks += get_ticks() - current()->stat.elapsed_total_ticks;
+  current()->stat.elapsed_total_ticks = get_ticks();       
 }

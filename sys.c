@@ -45,6 +45,7 @@ void free_task_struct(struct task_struct* current){
 }
 
 int sys_exit(){
+  printk("EXIT");
   free_task_struct(current());
   sched_next_rr(); 
   //schedule();
@@ -94,6 +95,7 @@ int sys_fork(void){
   child_stack_ebp[1] = ret_from_fork;
   
   list_add_tail(task, &readyqueue);
+  init_stat(&(child_task->stat));
   return child_task -> PID;
 }
 
