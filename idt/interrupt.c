@@ -8,6 +8,7 @@
 #include <io.h>
 #include <devices.h>
 #include <utils.h>
+#include <errno.h>
 
 #include <zeos_interrupt.h>
 
@@ -140,6 +141,8 @@ void debug(int n){
 int sys_get_stats(int pid, struct stats *st){
 //       printk("Hello from sys_get_stats\n");
 //       printkn(pid);
+       if(pid < 0) return -EINVALSKIPPED;
+       if(!access_ok(VERIFY_WRITE, st, sizeof(*st))) return -6;//-EFAULTSKIPPED;
        init_stat(st);
        for(int i = 0; i < NR_TASKS; ++i){
          if(task[i].task.PID == pid){
@@ -154,7 +157,7 @@ int sys_get_stats(int pid, struct stats *st){
             return 0;
          }       
        }
-       return -1;
+       return -ESRCHSKIPPED;
 }
 int sys_gettime(){
    return zeos_ticks; 
@@ -163,7 +166,7 @@ int sys_gettime(){
 void clock_routine(){
     ++zeos_ticks;
     zeos_show_clock();
-    //schedule();
+    schedule();
 }
 
 

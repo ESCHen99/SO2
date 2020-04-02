@@ -14,7 +14,7 @@
 #define NR_TASKS      10
 #define KERNEL_STACK_SIZE	1024
 
-#define DEFAULT_QUANTUM 200
+#define DEFAULT_QUANTUM 20
 #define RUNNING 0
 #define READY 1
 #define BLOCKED 2

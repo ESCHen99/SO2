@@ -29,6 +29,22 @@ void perror(void){
         char message[] = "Unspecified error\n";
         write(1, message, strlen(message));
     }
+    if(errno == ENOMEMSKIPPED){
+        char message[] = "ENOMEMSKIPPED\n";
+        write(1, message, strlen(message));
+     }
+     if(errno == EINVALSKIPPED){
+        char message[] = "EINVALSKIPPED\n";
+        write(1, message, strlen(message));
+     }
+    if(errno == ESRCHSKIPPED){
+        char message[] = "ESRCHSKIPPED\n";
+        write(1, message, strlen(message));
+     }
+    if(errno == 6){
+        char message[] = "EFAULTSKIPPED\n";
+        write(1, message, strlen(message));
+     }
     errno = 0;
 }
 
@@ -95,7 +111,7 @@ int __attribute__ ((__section__(".text.main")))
         write(1, buffer, strlen(buffer));
     }
 */    
-  //runjp();
-  runjp_rank(4, 4);
+ runjp();
+  //runjp_rank(0, 28);
   while(1);
 }

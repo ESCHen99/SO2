@@ -36,17 +36,29 @@ int sys_getpid()
 
 int ret_from_fork(){
   printk("ret_from_fork\n");
+
   return 0;        
 }
 
 void free_task_struct(struct task_struct* current){
   free_user_pages(current);
+  current->PID = 0xfefefefe;
+  int pag;
+  page_table_entry * process_PT =  get_PT(task);
+  for (pag=0;pag<NUM_PAG_CODE;pag++){
+     process_PT[PAG_LOG_INIT_CODE+pag].entry = 0;
+  }
   //list_del(&(current -> list));
 }
 
 int sys_exit(){
-  printk("EXIT");
+  printk("EXIT: ");
+  printkn(current()->PID);
+  printk("\n");
+  update_process_state_rr(current(), &freequeue);
+  
   free_task_struct(current());
+  //list_add(current(), &freequeue);
   sched_next_rr(); 
   //schedule();
   //task_switch(idle_task); // To be substituted by scheduler interface
@@ -96,7 +108,11 @@ int sys_fork(void){
   
   list_add_tail(task, &readyqueue);
   init_stat(&(child_task->stat));
+  printk("FORK ");
+  printkn(child_task->PID);
+  printk("\n");
   return child_task -> PID;
+
 }
 
 /**

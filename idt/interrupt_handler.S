@@ -80,7 +80,7 @@ ENTRY(syscall_handler)
     push %edx
     push %eax
     push %eax
-    call printkn
+//    call printkn
     pop %eax
     pop %eax
     pop %edx

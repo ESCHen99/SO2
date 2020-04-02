@@ -90,6 +90,7 @@ void init_idle (void)
 {
 	struct list_head* task = list_first(&freequeue); // Fetch the first free task to be idle
  	struct task_struct* real_task = list_entry(task, struct task_struct, list);
+	list_del(task);
 	real_task -> PID = 0;                            // Process PID = 0
   real_task -> quantum = DEFAULT_QUANTUM;
 	allocate_DIR(real_task);                         // Allocate directory table
@@ -102,7 +103,6 @@ void init_idle (void)
                                                                                 // %ebp
 	//task_switch(real_task);
 	idle_task = real_task;
-	list_del(task);
   ++PID_counter;
 }
 
@@ -112,6 +112,7 @@ void init_task1(void)
 {
    struct list_head* task = list_first(&freequeue);
    struct task_struct* real_task = list_entry(task, struct task_struct, list);
+   list_del(task);
    real_task -> PID = 0x1;
    real_task -> quantum = DEFAULT_QUANTUM;
    allocate_DIR(real_task);
@@ -123,7 +124,7 @@ void init_task1(void)
    //tss.esp0 = real_task;
    set_cr3(real_task -> dir_pages_baseAddr);
    task1_task = real_task;
-   list_del(task);
+   init_stat(&(real_task->stat));
    ++PID_counter;
 }
 
@@ -170,22 +171,23 @@ void sched_next_rr(){
     struct list_head* task = list_first(&readyqueue);
     next_task = list_entry(task, struct task_struct, list);
     update_process_state_rr(next_task, NULL); 
+
+    ++next_task->stat.total_trans;
   }
   current_quantum = get_quantum(next_task);
-
+  next_task->stat.remaining_ticks = current_quantum;
 
   next_task->stat.ready_ticks += get_ticks() - next_task ->stat.elapsed_total_ticks;
   next_task->stat.elapsed_total_ticks = get_ticks(); // d)
   
-  ++next_task->stat.total_trans;
   
   task_switch(next_task);
 }
 
 void update_process_state_rr(struct task_struct *t, struct list_head *dest){
-  if(dest != NULL) list_add_tail(&(t->list), dest);
-  else{
-    list_del(&(t->list));        
+  if(t->list.next != NULL & t->list.next != NULL) list_del(&(t->list));
+  if(dest != NULL){
+          list_add_tail(&(t->list), dest);
   }
 }
 
