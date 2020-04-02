@@ -121,8 +121,40 @@ int sys_write(int fd, char* buffer, int size){
     return 0;
 }
 
+void printkn(int n){
+    if(n < 10){
+      printc_color('0' + n, white);
+    }
+    else{
+      printkn(n/10);
+      printkn((n)%10);
+    }        
+}
+
+void debug(int n){
+  printk("Debug called from function: ");
+  printkn(n);
+  printk('\n');
+}
+
 int sys_get_stats(int pid, struct stats *st){
-        
+//       printk("Hello from sys_get_stats\n");
+//       printkn(pid);
+       init_stat(st);
+       for(int i = 0; i < NR_TASKS; ++i){
+         if(task[i].task.PID == pid){
+            struct stats aux = task[i].task.stat;
+            st->user_ticks = aux.user_ticks;
+            st->system_ticks = aux.system_ticks;
+            st->blocked_ticks = aux.blocked_ticks;
+            st->ready_ticks = aux.ready_ticks;
+            st->elapsed_total_ticks = aux.elapsed_total_ticks;
+            st -> total_trans = aux.total_trans;
+            st -> remaining_ticks = aux.remaining_ticks;
+            return 0;
+         }       
+       }
+       return -1;
 }
 int sys_gettime(){
    return zeos_ticks; 
@@ -131,7 +163,7 @@ int sys_gettime(){
 void clock_routine(){
     ++zeos_ticks;
     zeos_show_clock();
-    schedule();
+    //schedule();
 }
 
 

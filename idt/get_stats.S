@@ -11,5 +11,6 @@ ENTRY(get_stats)
   int $0x80
 
   pop %ebx
+  mov %ebp, %esp
   pop %ebp
   ret

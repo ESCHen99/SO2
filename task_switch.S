@@ -8,13 +8,17 @@ ENTRY(task_switch)
   push %ebx
 
   #call to inner_task_switch
+  push %ebp
   push 8(%ebp)
   call inner_task_switch
-  sub  $4, %esp
-    pop  %ebx
+  add  $8, %esp
+
+  
+  pop  %ebx
   pop  %edi
   pop  %esi
-movl %eax, %esp
+  
+  movl %eax, %esp
 
   pop  %ebp
   ret

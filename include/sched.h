@@ -30,10 +30,9 @@ struct list_head readyqueue;
 struct task_struct {
   int PID;			/* Process ID. This MUST be the first field of the struct. */
   page_table_entry * dir_pages_baseAddr;
-  unsigned int kernel_esp;
+  int kernel_esp;
   struct list_head list;
   int quantum;
-  int state;
   struct stats stat;
 };
 
@@ -62,6 +61,8 @@ void init_task_system();
 /* Inicialitza les dades del proces inicial */
 struct task_struct* task1_task;
 
+struct task_struct* list_head_to_task_struct(struct list_head* l);
+
 void init_task1(void);
 
 struct task_struct* idle_task;
@@ -76,7 +77,7 @@ int get_current_ebp();
 
 void load_esp(unsigned int new_ebp);
 
-int inner_task_switch(union task_union* t);
+int inner_task_switch(union task_union* t, int current_ebp);
 
 void task_switch(union task_union*t);
 

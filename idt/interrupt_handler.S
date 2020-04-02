@@ -22,9 +22,24 @@
       pushl %ebx; \
       movl $__KERNEL_DS, %edx;    \
       movl %edx, %ds;           \
-      movl %edx, %es
+      movl %edx, %es; \
+      push %eax; \
+      push %ecx; \
+      push %edx; \
+      call user_to_system; \
+      pop %edx; \
+      pop %ecx; \
+      pop %eax; \
+     
 
 #define RESTORE_ALL \
+      push %eax; \
+      push %ecx; \
+      push %edx; \
+      call system_to_user; \
+      pop %edx; \
+      pop %ecx; \
+      pop %eax; \
       pop %ebx; \
       pop %ecx; \
       pop %edx; \
@@ -61,6 +76,15 @@ ENTRY(syscall_handler)
     jl err
     cmpl $MAX_SYSCALL, %EAX
     jg err
+    push %ecx
+    push %edx
+    push %eax
+    push %eax
+    call printkn
+    pop %eax
+    pop %eax
+    pop %edx
+    pop %ecx
     call *sys_call_table(, %eax, 0x04)
     jmp fin
 err:
