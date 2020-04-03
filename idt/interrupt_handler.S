@@ -76,15 +76,6 @@ ENTRY(syscall_handler)
     jl err
     cmpl $MAX_SYSCALL, %EAX
     jg err
-    push %ecx
-    push %edx
-    push %eax
-    push %eax
-//    call printkn
-    pop %eax
-    pop %eax
-    pop %edx
-    pop %ecx
     call *sys_call_table(, %eax, 0x04)
     jmp fin
 err:

@@ -13,6 +13,8 @@
 
 #include <sched.h>
 
+#include <errno.h>
+
 #define LECTURA 0
 #define ESCRIPTURA 1
 
@@ -69,7 +71,7 @@ int get_fork_ebp(void);
 
 int sys_fork(void){
   int PID = -1;
-  if(list_empty(&freequeue)) return PID; // Too many process already
+  if(list_empty(&freequeue)) return -ENOMEM; // Too many process already
   struct list_head* task = list_first(&freequeue); // a) get a free task_struct     
   list_del(task);
   struct task_struct* child_task = list_entry(task, struct task_struct, list);

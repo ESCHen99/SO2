@@ -29,20 +29,20 @@ void perror(void){
         char message[] = "Unspecified error\n";
         write(1, message, strlen(message));
     }
-    if(errno == ENOMEMSKIPPED){
-        char message[] = "ENOMEMSKIPPED\n";
+    if(errno == ENOMEM){
+        char message[] = "ENOMEM\n";
         write(1, message, strlen(message));
      }
-     if(errno == EINVALSKIPPED){
-        char message[] = "EINVALSKIPPED\n";
+     if(errno == EINVAL){
+        char message[] = "EINVAL\n";
         write(1, message, strlen(message));
      }
-    if(errno == ESRCHSKIPPED){
-        char message[] = "ESRCHSKIPPED\n";
+    if(errno == ESRCH){
+        char message[] = "ESRCH\n";
         write(1, message, strlen(message));
      }
     if(errno == 6){
-        char message[] = "EFAULTSKIPPED\n";
+        char message[] = "EFAULT\n";
         write(1, message, strlen(message));
      }
     errno = 0;

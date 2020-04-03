@@ -7,9 +7,10 @@
 #define ENEGSIZE 5
 #define EUNSPECIFIED 1
 #define EMAXNUMPROCESS 2
-#define ENOMEMSKIPPED 15
-#define EINVALSKIPPED 15 
-#define ESRCHSKIPPED 15//5
-#define EFAULTSKIPPED 6
+#define ENOMEM 0xb
+#define EAGAIN 0xc
+#define EINVAL 0x16 
+#define ESRCH 3//5
+#define EFAULT 14
 
 #endif
