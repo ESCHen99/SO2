@@ -34,10 +34,8 @@ SYSOBJ = \
 	utils.o \
 	hardware.o \
 	list.o \
-	interrupt_handler.o\
 	writeMSR.o\
   task_switch.o\
-  get_current_ebp.o\
   load_esp.o\
   get_fork_ebp.o\
   libauxjp.a\
@@ -75,22 +73,16 @@ bootsect.o: bootsect.s
 bootsect.s: bootsect.S
 	$(CPP) $(ASMFLAGS) -traditional $< -o $@
 
-entry.s: entry.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
+entry.s: $(idt)/entry.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
 load_esp.s: load_esp.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
 
-get_current_ebp.s: get_current_ebp.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
-	$(CPP) $(ASMFLAGS) -o $@ $<
-
 get_fork_ebp.s: get_fork_ebp.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
-
-current.s: current.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
-	$(CPP) $(ASMFLAGS) -o $@ $<
 
 fast_write.s: $(idt)/fast_write.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
@@ -109,9 +101,6 @@ getpid.s: $(idt)/getpid.S $(INCLUDEDIR)/asm.h $(INCLUDEDIR)/segment.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
 
-interrupt_handler.s: $(idt)/interrupt_handler.S $(INCLUDEDIR)/asm.h 
-	$(CPP) $(ASMFLAGS) -o $@ $<
-
 write.s: $(idt)/write.S $(INCLUDEDIR)/asm.h 
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
@@ -129,7 +118,7 @@ task_switch.s: task_switch.S $(INCLUDEDIR)/asm.h
 	$(CPP) $(ASMFLAGS) -o $@ $<
 
 
-user.o:user.c interrupt_handler.s $(INCLUDEDIR)/libc.h 
+user.o:user.c $(INCLUDEDIR)/libc.h 
 	gcc -m32 -O0  -g -fno-omit-frame-pointer -ffreestanding -Wall -Iinclude -fno-PIC   -c -o user.o user.c
 
 

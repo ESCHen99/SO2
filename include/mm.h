@@ -22,6 +22,9 @@ int init_frames( void );
 int alloc_frame( void );
 void free_frame( unsigned int frame );
 void set_user_pages( struct task_struct *task );
+void free_user_pages(struct task_struct *task);
+void share_code_pages(struct task_struct* parent_task, struct task_struct* child_task);
+int new_data_pages(struct task_struct* task);
 
 
 extern Descriptor  *gdt;
@@ -39,4 +42,6 @@ void set_ss_pag(page_table_entry *PT, unsigned page,unsigned frame);
 void del_ss_pag(page_table_entry *PT, unsigned page);
 unsigned int get_frame(page_table_entry *PT, unsigned int page);
 
+
+int get_fork_ebp(void);
 #endif  /* __MM_H__ */

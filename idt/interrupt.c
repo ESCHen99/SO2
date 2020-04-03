@@ -92,57 +92,32 @@ void keyboard_routine(){
         char aux = char_map[inb(0x60) & 0x7F];
         if(aux == 0) aux = 'C';
         printc_color(aux, white);
-        if(aux == '0') task_switch(idle_task);
-        if(aux == '1') task_switch(task1_task);
-        if(aux == 'f') task_switch(list_entry(list_first(&readyqueue), struct task_struct, list));
-        if(aux == 's'){
-          //Testing the scheduler
-          schedule(); 
-        }
-    }
+   }
 }
 
 #define sys_writeBUFF 256
 
 int sys_write(int fd, char* buffer, int size){
-    if(fd != 1) return -81;        // EBDFD
-    if(buffer == NULL) return -14; // ENULLPTR
-    if(size < 0) return -5;        // ENEGSIZE
+    if(fd != 1) return -EBADFD;        
+    if(!access_ok(VERIFY_READ, buffer, sizeof(*buffer))) return -EFAULT; 
+    if(size < 0) return -EFAULT;      
 
     char sys_buffer[sys_writeBUFF];
     while(size > sys_writeBUFF){
         if(copy_from_user(buffer, sys_buffer, sys_writeBUFF) >= 0)
             sys_write_console(sys_buffer, sys_writeBUFF);
-        else return -1;
+        else return -EAGAIN;
         size -= sys_writeBUFF;
     }
     if(copy_from_user(buffer, sys_buffer, size) >= 0)
         sys_write_console(sys_buffer, size);
-    else return -1;                 // EUNSPECIFIED
+    else return -EAGAIN;
     return 0;
 }
 
-void printkn(int n){
-    if(n < 10){
-      printc_color('0' + n, white);
-    }
-    else{
-      printkn(n/10);
-      printkn((n)%10);
-    }        
-}
-
-void debug(int n){
-  printk("Debug called from function: ");
-  printkn(n);
-  printk('\n');
-}
-
 int sys_get_stats(int pid, struct stats *st){
-//       printk("Hello from sys_get_stats\n");
-//       printkn(pid);
        if(pid < 0) return -EINVAL;
-       if(!access_ok(VERIFY_WRITE, st, sizeof(*st))) return -14;//-EFAULTSKIPPED;
+       if(!access_ok(VERIFY_WRITE, st, sizeof(*st))) return -EFAULT;//-EFAULTSKIPPED;
        init_stat(st);
        for(int i = 0; i < NR_TASKS; ++i){
          if(task[i].task.PID == pid){
@@ -159,6 +134,7 @@ int sys_get_stats(int pid, struct stats *st){
        }
        return -ESRCH;
 }
+
 int sys_gettime(){
    return zeos_ticks; 
 }
@@ -186,6 +162,5 @@ void setIdt()
   writeMSR(0x174, __KERNEL_CS);
   writeMSR(0x175, INITIAL_ESP);
   writeMSR(0x176, (int) syscall_handler_sysenter);
-
 }
 

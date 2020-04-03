@@ -85,3 +85,13 @@ void printk(char *string)
   for (i = 0; string[i]; i++)
     printc_color(string[i], red);
 }
+
+void printkn(int n){
+    if(n < 10){
+      printc_color('0' + n, white);
+    }
+    else{
+      printkn(n/10);
+      printkn((n)%10);
+    }        
+}

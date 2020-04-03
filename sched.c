@@ -7,6 +7,8 @@
 #include <io.h>
 #include <list.h>
 #include <errno.h>
+#include <interrupt.h>
+#include <utils.h>
 /* Declate and initialize a freequeue*/
 
 //struct list_head 
@@ -89,19 +91,19 @@ struct task_struct* list_head_to_task_struct(struct list_head* l){
 void init_idle (void)
 {
 	struct list_head* task = list_first(&freequeue); // Fetch the first free task to be idle
- 	struct task_struct* real_task = list_entry(task, struct task_struct, list);
+ 	struct task_struct* real_task = list_head_to_task_struct(task);
 	list_del(task);
+
 	real_task -> PID = 0;                            // Process PID = 0
   real_task -> quantum = DEFAULT_QUANTUM;
 	allocate_DIR(real_task);                         // Allocate directory table
 
-  union task_union* real_kernel_stack = real_task; // kernel_stack (task_union) pointer
+  union task_union* real_kernel_stack = (union task_union*) real_task; // kernel_stack (task_union) pointer
   
-  real_kernel_stack -> stack[KERNEL_STACK_SIZE - 1] = &cpu_idle; // Base of stack @of function to be executed
+  real_kernel_stack -> stack[KERNEL_STACK_SIZE - 1] = (long) &cpu_idle; // Base of stack @of function to be executed
   real_kernel_stack -> stack[KERNEL_STACK_SIZE - 2] = 0xfe00fe00; // random %ebp for debug purposes
-  real_task -> kernel_esp = &(real_kernel_stack->stack[KERNEL_STACK_SIZE-2]); // Update kernel_sack for task_switch
+  real_task -> kernel_esp = (long) &(real_kernel_stack->stack[KERNEL_STACK_SIZE-2]); // Update kernel_sack for task_switch
                                                                                 // %ebp
-	//task_switch(real_task);
 	idle_task = real_task;
   ++PID_counter;
 }
@@ -111,17 +113,17 @@ int get_fork_ebp();
 void init_task1(void)
 {
    struct list_head* task = list_first(&freequeue);
-   struct task_struct* real_task = list_entry(task, struct task_struct, list);
+   struct task_struct* real_task = list_head_to_task_struct(task);
    list_del(task);
+
    real_task -> PID = 0x1;
    real_task -> quantum = DEFAULT_QUANTUM;
    allocate_DIR(real_task);
 
    set_user_pages(real_task); 
-   tss.esp0 = (int)real_task + (int) (KERNEL_STACK_SIZE)*sizeof(long); //Assuming task_switch structure??? 
+   tss.esp0 = (int)real_task + (int) (KERNEL_STACK_SIZE)*sizeof(long);
    writeMSR(0x175, tss.esp0);
 
-   //tss.esp0 = real_task;
    set_cr3(real_task -> dir_pages_baseAddr);
    task1_task = real_task;
    init_stat(&(real_task->stat));
@@ -181,11 +183,11 @@ void sched_next_rr(){
   next_task->stat.elapsed_total_ticks = get_ticks(); // d)
   
   
-  task_switch(next_task);
+  task_switch((union task_union*) next_task);
 }
 
 void update_process_state_rr(struct task_struct *t, struct list_head *dest){
-  if(t->list.next != NULL & t->list.next != NULL) list_del(&(t->list));
+  if(t->list.next != NULL && t->list.next != NULL) list_del(&(t->list));
   if(dest != NULL){
           list_add_tail(&(t->list), dest);
   }
@@ -207,7 +209,7 @@ void schedule(){
     if(current_task != idle_task) update_process_state_rr(current_task, &readyqueue);
 
     if(list_empty(&readyqueue)){
-      task_switch(idle_task);        
+      task_switch((union task_union *) idle_task);        
     }
     else{
       current_task->stat.system_ticks += get_ticks() - current_task -> stat.elapsed_total_ticks; // c)

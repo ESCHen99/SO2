@@ -6,6 +6,9 @@
 
 #include <types.h>
 
+#include <errno.h>
+
+
 int errno;
 
 void itoa(int a, char *b)
@@ -43,3 +46,30 @@ int strlen(char *a)
   return i;
 }
 
+void perror(void){
+    if(errno == 0){
+        char message[] = "OK\n";
+        write(1, message, 3) ;
+    }
+    if(errno == EBADFD){
+        char message[] = "Bad file descriptor\n";
+        write(1, message, strlen(message));
+    }
+    if(errno == ENOMEM){
+        char message[] = "ENOMEM\n";
+        write(1, message, strlen(message));
+     }
+     if(errno == EINVAL){
+        char message[] = "EINVAL\n";
+        write(1, message, strlen(message));
+     }
+    if(errno == ESRCH){
+        char message[] = "ESRCH\n";
+        write(1, message, strlen(message));
+     }
+    if(errno == EFAULT){
+        char message[] = "EFAULT\n";
+        write(1, message, strlen(message));
+     }
+    errno = 0;
+}

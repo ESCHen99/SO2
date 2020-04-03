@@ -102,7 +102,7 @@ void set_user_pages( struct task_struct *task )
   }
 }
 
-int share_code_pages(struct task_struct* parent_task, struct task_struct* child_task){
+void share_code_pages(struct task_struct* parent_task, struct task_struct* child_task){
   page_table_entry* parent_PT = get_PT(parent_task);
   page_table_entry* child_PT = get_PT(child_task);
   for(int pag=0; pag < NUM_PAG_CODE ; pag++){
@@ -117,12 +117,22 @@ int new_data_pages(struct task_struct* task){
     page_table_entry* process_PT = get_PT(task);
     for(int pag = 0; pag < NUM_PAG_DATA; ++pag){
       int new_ph_pag = alloc_frame();
+      if(new_ph_pag < 0){
+        --pag;
+        while(pag >= 0){
+          free_frame(process_PT[PAG_LOG_INIT_DATA+pag].bits.pbase_addr);
+          --pag;
+        } 
+        return -1;
+      }
       process_PT[PAG_LOG_INIT_DATA+pag].entry = 0;
       process_PT[PAG_LOG_INIT_DATA+pag].bits.pbase_addr = new_ph_pag;
     	process_PT[PAG_LOG_INIT_DATA+pag].bits.user = 1;
     	process_PT[PAG_LOG_INIT_DATA+pag].bits.rw = 1;
   	  process_PT[PAG_LOG_INIT_DATA+pag].bits.present = 1;
+      
     }
+    return 0;
 }
 
 /* Writes on CR3 register producing a TLB flush */
@@ -248,13 +258,17 @@ int alloc_frame( void )
 
 void free_user_pages( struct task_struct *task )
 {
- int pag;
- page_table_entry * process_PT =  get_PT(task);
+  int pag;
+  page_table_entry * process_PT =  get_PT(task);
     /* DATA */
- for (pag=0;pag<NUM_PAG_DATA;pag++){
-	 free_frame(process_PT[PAG_LOG_INIT_DATA+pag].bits.pbase_addr);
-         process_PT[PAG_LOG_INIT_DATA+pag].entry = 0;
- }
+  for (pag=0;pag<NUM_PAG_DATA;pag++){
+	  free_frame(process_PT[PAG_LOG_INIT_DATA+pag].bits.pbase_addr);
+    process_PT[PAG_LOG_INIT_DATA+pag].entry = 0;
+  }
+
+  for (pag=0;pag<NUM_PAG_CODE;pag++){
+    process_PT[PAG_LOG_INIT_CODE+pag].entry = 0;
+  }
 }
 
 

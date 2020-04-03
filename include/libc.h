@@ -10,8 +10,6 @@
 
 int getpid(void);
 
-//int exit(void);
-
 int fork(void);
 
 int write(int fd, char *buffer, int size);
