@@ -158,7 +158,8 @@ disk: zeos.bin
 	dd if=zeos.bin of=/dev/fd0
 
 emul: zeos.bin
-	bochs -q -f .bochsrc
+	bochs -q -f .bochsrc || true
+	
 
 gdb: zeos.bin
 	bochs -q -f .bochsrc_gdb &
