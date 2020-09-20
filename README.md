@@ -41,5 +41,6 @@ clean
 ```bash
   make clean
 ```
-## License
+
+## Links
 Subject [web](http://docencia.ac.upc.edu/FIB/grau/SO2/)
