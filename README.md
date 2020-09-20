@@ -1,5 +1,7 @@
 # SO2 A simple x86 bootable OS
 
+See follow up: <a href = "https://github.com/ESCHen99/Projecte-SO2">Project</a>
+
 ## Bochs simulator
 
 [Bochs](http://docencia.ac.upc.edu/FIB/grau/SO2/documents/SO2vagrant-environment.tar.gz)
